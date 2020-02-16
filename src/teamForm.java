@@ -18,6 +18,9 @@ public class teamForm {
         prefDAG = new Graph();
         int n = names.length - 1;
 
+        //testing
+        //System.out.println(formatGroups(Arrays.asList(Arrays.copyOfRange(names, 1, names.length)), 4));
+
         int fromIndex = 0;
         while ((row = csvReader.readLine()) != null) {
             String[] ratings = row.split(",");
@@ -44,15 +47,15 @@ public class teamForm {
         System.out.println(mergedGraph);
 
         int permsTested = 0;
-        double temp = 10000;
-        double coolingRate = 0.000001;
+        double temp = 20;
+        double coolingRate = 0.00008;
 
         List<Integer> bestOrder = getRandomIndexList(n);
         List<Integer> currentOrder = new ArrayList<>(bestOrder);
         double bestMean = 0;
 
         long startTime = System.currentTimeMillis();
-        while (temp > 1 && System.currentTimeMillis() - startTime < timeout) {
+        while (temp > 0.0001 && System.currentTimeMillis() - startTime < timeout) {
             List<Integer> newOrder = new ArrayList<>(currentOrder);
             int pos1 = (int) (Math.random() * n);
             int pos2 = (int) (Math.random() * n);
@@ -70,7 +73,7 @@ public class teamForm {
             }
 
             temp *= 1 - coolingRate;
-            if (permsTested % 10000 == 0) System.out.println((int)temp);
+            if (permsTested % 10000 == 0) System.out.println(temp);
 
             if (currentMean > bestMean) {
                 bestOrder = new ArrayList<>(currentOrder);
@@ -82,9 +85,9 @@ public class teamForm {
         }
 
         List<String> bestSortNames = bestOrder.stream().map(i -> names[i + 1]).collect(Collectors.toList());
-        System.out.println(bestSortNames);
+        System.out.println(formatGroups(bestSortNames, 4));
         System.out.println("perms tested: " + permsTested);
-
+        System.out.println("runtime (s): " + (System.currentTimeMillis() - startTime)/1000);
     }
 
     public static double getOrderMean (List<Integer> order) {
@@ -135,5 +138,24 @@ public class teamForm {
         List<Integer> range = IntStream.rangeClosed(0, length - 1).boxed().collect(Collectors.toList());
         Collections.shuffle(range, new Random());
         return range;
+    }
+
+    //alphabetizes for easier comparison
+    public static List<List<String>> formatGroups (List<String> names, int numGroups) {
+        int groupSize = names.size() / numGroups;
+        List<List<String>> groups = new ArrayList<>();
+        List<String> currentGroup = new ArrayList<>();
+        for (int i = 0; i <= names.size() - groupSize; i += groupSize) { //starting index for group
+            for (int j = 0; j < groupSize; j++) {
+                currentGroup.add(names.get(i + j));
+            }
+            groups.add(currentGroup);
+            currentGroup = new ArrayList<>();
+        }
+        for (List<String> group : groups) {
+            Collections.sort(group);
+        }
+        groups.sort(Comparator.comparing(l -> l.get(0)));
+        return groups;
     }
 }
