@@ -6,7 +6,9 @@ import java.util.stream.IntStream;
 
 public class teamForm {
     public static Graph prefDAG;
+    public static Graph mergedGraph;
     public static double k = 0.0001;
+    public static double timeout = 20000; //max runtime (in millis)
 
     public static void main(String[] args) throws Exception {
         Scanner userInput = new Scanner(System.in);
@@ -31,7 +33,7 @@ public class teamForm {
 
         System.out.println(prefDAG);
 
-        Graph mergedGraph = new Graph();
+        mergedGraph = new Graph();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 System.out.println("i: " + i + " j: " + j + " weight: " + getMeanEdgeWeight(i, j, prefDAG, k));
@@ -41,55 +43,78 @@ public class teamForm {
 
         System.out.println(mergedGraph);
 
-        double bestSortMean = 0;
-        List<Integer> bestSort = new ArrayList<>();
         int permsTested = 0;
-        while (true) {
-            long startTime = System.currentTimeMillis();
-            while (System.currentTimeMillis() - startTime < 10000) {
-                //represents the groups (first four in first group, etc.)
-                List<Integer> randomIndexList = getRandomIndexList(n);
-                //System.out.println(randomIndexList);
-                int nodesInP = 4; //4 nodes per partition (people per team)
-                int numPartitions = 4;
-                List<Double> groupMeans = new ArrayList<>();
-                for (int p = 0; p < numPartitions; p++) {
-                    //find the fancy mean of these nodesInP nodes
-                    List<Double> pairMeans = new ArrayList<>();
-                    for (int i = 0; i < nodesInP; i++) { //todo: make not count all twice
-                        for (int j = 0; j < nodesInP; j++) {
-                            if (i == j) continue;
-                            //System.out.println("i + p*nodesInP: " + (i + p*nodesInP) + " j + p*nodesInP: " + (j + p*nodesInP));
-                            pairMeans.add(getMeanEdgeWeight(randomIndexList.get(i + p * nodesInP), randomIndexList.get(j + p * nodesInP), mergedGraph, k));
-                            //System.out.println(getMeanEdgeWeight(randomIndexList.get(i + p*nodesInP), randomIndexList.get(j + p*nodesInP), mergedGraph, k));
-                        }
-                    }
-                    groupMeans.add(getMean(pairMeans, k));
-                    //System.out.println(getMean(pairMeans, k));
-                }
-                double sortOverallMean = getMean(groupMeans, k);
-                if (sortOverallMean > bestSortMean) {
-                    bestSortMean = sortOverallMean;
-                    bestSort = randomIndexList;
-                    System.out.println("best mean: " + bestSortMean);
-                    System.out.println("best sort: " + bestSort);
-                }
-                permsTested++;
+        double temp = 10000;
+        double coolingRate = 0.000001;
+
+        List<Integer> bestOrder = getRandomIndexList(n);
+        List<Integer> currentOrder = new ArrayList<>(bestOrder);
+        double bestMean = 0;
+
+        long startTime = System.currentTimeMillis();
+        while (temp > 1 && System.currentTimeMillis() - startTime < timeout) {
+            List<Integer> newOrder = new ArrayList<>(currentOrder);
+            int pos1 = (int) (Math.random() * n);
+            int pos2 = (int) (Math.random() * n);
+
+            //swap positions
+            newOrder.set(pos1, currentOrder.get(pos2));
+            newOrder.set(pos2, currentOrder.get(pos1));
+
+            double currentMean = getOrderMean(currentOrder);
+            double newMean = getOrderMean(newOrder);
+
+            if (acceptanceProbability(currentMean, newMean, temp) > Math.random()) {
+                currentOrder = new ArrayList<>(newOrder);
+                currentMean = newMean;
             }
 
-            System.out.println("Continue? (yes/no)");
-            while (!userInput.hasNext()) { }
-            if (userInput.next().equals("yes")) continue;
-            else break;
+            temp *= 1 - coolingRate;
+            if (permsTested % 10000 == 0) System.out.println((int)temp);
+
+            if (currentMean > bestMean) {
+                bestOrder = new ArrayList<>(currentOrder);
+                bestMean = currentMean;
+                System.out.println("best mean: " + currentMean);
+                System.out.println("best order: " + bestOrder);
+            }
+            permsTested++;
         }
 
-        List<String> bestSortNames = bestSort.stream().map(i -> names[i + 1]).collect(Collectors.toList());
+        List<String> bestSortNames = bestOrder.stream().map(i -> names[i + 1]).collect(Collectors.toList());
         System.out.println(bestSortNames);
         System.out.println("perms tested: " + permsTested);
 
     }
 
-    public static double getMeanEdgeWeight (int firstNode, int secondNode, Graph graph, double k) {
+    public static double getOrderMean (List<Integer> order) {
+        //order parameter represents the groups (first four in first group, etc.)
+        int nodesInP = 4; //4 nodes per partition (people per team)
+        int numPartitions = 4;
+        List<Double> groupMeans = new ArrayList<>();
+        for (int p = 0; p < numPartitions; p++) {
+            //find the fancy mean of these nodesInP nodes
+            List<Double> pairMeans = new ArrayList<>();
+            for (int i = 0; i < nodesInP; i++) { //todo: make not count all twice
+                for (int j = 0; j < nodesInP; j++) {
+                    if (i == j) continue;
+                    //System.out.println("i + p*nodesInP: " + (i + p*nodesInP) + " j + p*nodesInP: " + (j + p*nodesInP));
+                    pairMeans.add(getMeanEdgeWeight(order.get(i + p * nodesInP), order.get(j + p * nodesInP), mergedGraph, k));
+                    //System.out.println(getMeanEdgeWeight(randomIndexList.get(i + p*nodesInP), randomIndexList.get(j + p*nodesInP), mergedGraph, k));
+                }
+            }
+            groupMeans.add(getMean(pairMeans, k));
+            //System.out.println(getMean(pairMeans, k));
+        }
+        return getMean(groupMeans, k);
+    }
+
+    public static double acceptanceProbability (double currentMean, double newMean, double temp) {
+        if (newMean > currentMean) return 1.0; //better, accept automatically
+        return Math.exp((newMean - currentMean) / temp);
+    }
+
+    public static double getMeanEdgeWeight(int firstNode, int secondNode, Graph graph, double k) {
 //        System.out.println("first edge weight: " + graph.getEdgeWeight(firstNode, secondNode));
 //        System.out.println("second edge weight: " + graph.getEdgeWeight(secondNode, firstNode));
 
@@ -97,16 +122,16 @@ public class teamForm {
     }
 
     //k determines the type of mean: 1 is arithmetic, 0 is geometric, -1 is harmonic or something
-    public static double getMean (List<Double> numbers, double k) {
+    public static double getMean(List<Double> numbers, double k) {
         double numerator = 0;
-        for (double num: numbers) {
+        for (double num : numbers) {
             numerator += Math.pow(num, k);
         }
         //return (int)(Math.pow(numerator/numbers.size(), 1/k) * 1000)/1000.0;
-        return Math.pow(numerator/numbers.size(), 1/k);
+        return Math.pow(numerator / numbers.size(), 1 / k);
     }
 
-    public static List<Integer> getRandomIndexList (int length) {
+    public static List<Integer> getRandomIndexList(int length) {
         List<Integer> range = IntStream.rangeClosed(0, length - 1).boxed().collect(Collectors.toList());
         Collections.shuffle(range, new Random());
         return range;
