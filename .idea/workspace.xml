@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="2f8340c7-cde6-4513-a671-f4da773935cf" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="NCHtCEhO" />
+  </component>
+  <component name="ProjectId" id="1XrhrGYoAhGeU0zShedueBqbj8y" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ameli\IdeaProjects\team-formation\src" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ameli\IdeaProjects\team-formation" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.teamForm">
+    <configuration name="teamForm" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="teamForm" />
+      <module name="team-formation" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="testGraph" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="testGraph" />
+      <module name="team-formation" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.teamForm" />
+        <item itemvalue="Application.testGraph" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2f8340c7-cde6-4513-a671-f4da773935cf" name="Default Changelist" comment="" />
+      <created>1581810318129</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1581810318129</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="324" y="90" key="#Project_Structure" timestamp="1581810330610">
+      <screen x="0" y="40" width="1463" height="783" />
+    </state>
+    <state x="324" y="90" key="#Project_Structure/0.40.1463.783@0.40.1463.783" timestamp="1581810330610" />
+    <state x="512" y="186" key="FileChooserDialogImpl" timestamp="1581820978715">
+      <screen x="0" y="40" width="1463" height="783" />
+    </state>
+    <state x="512" y="186" key="FileChooserDialogImpl/0.40.1463.783@0.40.1463.783" timestamp="1581820978715" />
+    <state width="551" height="655" key="GridCell.Tab.0.bottom" timestamp="1581836688856">
+      <screen x="0" y="40" width="1463" height="783" />
+    </state>
+    <state width="551" height="655" key="GridCell.Tab.0.bottom/0.40.1463.783@0.40.1463.783" timestamp="1581836688856" />
+    <state width="551" height="655" key="GridCell.Tab.0.center" timestamp="1581836688856">
+      <screen x="0" y="40" width="1463" height="783" />
+    </state>
+    <state width="551" height="655" key="GridCell.Tab.0.center/0.40.1463.783@0.40.1463.783" timestamp="1581836688856" />
+    <state width="551" height="655" key="GridCell.Tab.0.left" timestamp="1581836688856">
+      <screen x="0" y="40" width="1463" height="783" />
+    </state>
+    <state width="551" height="655" key="GridCell.Tab.0.left/0.40.1463.783@0.40.1463.783" timestamp="1581836688856" />
+    <state width="551" height="655" key="GridCell.Tab.0.right" timestamp="1581836688856">
+      <screen x="0" y="40" width="1463" height="783" />
+    </state>
+    <state width="551" height="655" key="GridCell.Tab.0.right/0.40.1463.783@0.40.1463.783" timestamp="1581836688856" />
+    <state x="428" y="255" key="com.intellij.ide.util.TipDialog" timestamp="1581810323205">
+      <screen x="0" y="40" width="1463" height="783" />
+    </state>
+    <state x="428" y="255" key="com.intellij.ide.util.TipDialog/0.40.1463.783@0.40.1463.783" timestamp="1581810323205" />
+    <state x="394" y="144" width="672" height="678" key="search.everywhere.popup" timestamp="1581829277259">
+      <screen x="0" y="40" width="1463" height="783" />
+    </state>
+    <state x="394" y="144" width="672" height="678" key="search.everywhere.popup/0.40.1463.783@0.40.1463.783" timestamp="1581829277259" />
+  </component>
+</project>
