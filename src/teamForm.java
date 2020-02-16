@@ -11,40 +11,29 @@ public class teamForm {
     public static double timeout = 20000; //max runtime (in millis)
 
     public static void main(String[] args) throws Exception {
-        Scanner userInput = new Scanner(System.in);
         BufferedReader csvReader = new BufferedReader(new FileReader("test-team-form-data.csv"));
         String row;
-        String[] names = csvReader.readLine().split(",");
+        String[] namesInput = csvReader.readLine().split(",");
+        String[] names = Arrays.copyOfRange(namesInput,1, namesInput.length); //remove leading comma
         prefDAG = new Graph();
-        int n = names.length - 1;
-
-        //testing
-        //System.out.println(formatGroups(Arrays.asList(Arrays.copyOfRange(names, 1, names.length)), 4));
+        int n = names.length;
 
         int fromIndex = 0;
         while ((row = csvReader.readLine()) != null) {
             String[] ratings = row.split(",");
-            System.out.println(ratings.length);
             for (int i = 1; i < ratings.length; i++) {
-                System.out.print(Double.parseDouble(ratings[i]) + " ");
                 prefDAG.addEdge(fromIndex, i - 1, Double.parseDouble(ratings[i]), true);
             }
             fromIndex++;
-            System.out.println();
         }
         csvReader.close();
-
-        System.out.println(prefDAG);
 
         mergedGraph = new Graph();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                System.out.println("i: " + i + " j: " + j + " weight: " + getMeanEdgeWeight(i, j, prefDAG, k));
                 mergedGraph.addEdge(i, j, getMeanEdgeWeight(i, j, prefDAG, k), false);
             }
         }
-
-        System.out.println(mergedGraph);
 
         //todo: make a formula to take desired runtime (perms to test) and get cooling parameters
         int permsTested = 0;
@@ -76,19 +65,20 @@ public class teamForm {
             }
 
             temp *= 1 - coolingRate;
-            if (permsTested % 10000 == 0) System.out.println(temp);
+            //if (permsTested % 10000 == 0) System.out.println(temp);
 
             if (currentMean > bestMean) {
                 bestOrder = new ArrayList<>(currentOrder);
                 bestMean = currentMean;
-                System.out.println("best mean: " + currentMean);
-                System.out.println("best order: " + bestOrder);
+                //System.out.println("best mean: " + currentMean);
+                //System.out.println("best order: " + bestOrder);
             }
             permsTested++;
         }
 
-        List<String> bestSortNames = bestOrder.stream().map(i -> names[i + 1]).collect(Collectors.toList());
-        System.out.println(formatGroups(bestSortNames, 4));
+        List<String> bestSortNames = bestOrder.stream().map(i -> names[i]).collect(Collectors.toList());
+        System.out.println("best grouping: " + formatGroups(bestSortNames, 4));
+        System.out.println("best mean: " + bestMean);
         System.out.println("perms tested: " + permsTested);
         System.out.println("runtime (ms): " + (System.currentTimeMillis() - startTime));
     }
@@ -104,13 +94,10 @@ public class teamForm {
             for (int i = 0; i < nodesInP; i++) { //todo: make not count all twice
                 for (int j = 0; j < nodesInP; j++) {
                     if (i == j) continue;
-                    //System.out.println("i + p*nodesInP: " + (i + p*nodesInP) + " j + p*nodesInP: " + (j + p*nodesInP));
                     pairMeans.add(getMeanEdgeWeight(order.get(i + p * nodesInP), order.get(j + p * nodesInP), mergedGraph, k));
-                    //System.out.println(getMeanEdgeWeight(randomIndexList.get(i + p*nodesInP), randomIndexList.get(j + p*nodesInP), mergedGraph, k));
                 }
             }
             groupMeans.add(getMean(pairMeans, k));
-            //System.out.println(getMean(pairMeans, k));
         }
         return getMean(groupMeans, k);
     }
@@ -121,9 +108,6 @@ public class teamForm {
     }
 
     public static double getMeanEdgeWeight(int firstNode, int secondNode, Graph graph, double k) {
-//        System.out.println("first edge weight: " + graph.getEdgeWeight(firstNode, secondNode));
-//        System.out.println("second edge weight: " + graph.getEdgeWeight(secondNode, firstNode));
-
         return getMean(Arrays.asList(graph.getEdgeWeight(firstNode, secondNode), graph.getEdgeWeight(secondNode, firstNode)), k);
     }
 
@@ -133,7 +117,6 @@ public class teamForm {
         for (double num : numbers) {
             numerator += Math.pow(num, k);
         }
-        //return (int)(Math.pow(numerator/numbers.size(), 1/k) * 1000)/1000.0;
         return Math.pow(numerator / numbers.size(), 1 / k);
     }
 
