@@ -46,17 +46,20 @@ public class teamForm {
 
         System.out.println(mergedGraph);
 
+        //todo: make a formula to take desired runtime (perms to test) and get cooling parameters
         int permsTested = 0;
-        double temp = 20;
-        double coolingRate = 0.00008;
+        double temp = 5; //was 20 //was 1.58 //was 5 || //was 27
+        double coolingRate = 0.000457; //was 0.00008 //was 0.000174 //was 0.000457 || //was 0.00126
 
         List<Integer> bestOrder = getRandomIndexList(n);
         List<Integer> currentOrder = new ArrayList<>(bestOrder);
         double bestMean = 0;
 
         long startTime = System.currentTimeMillis();
-        while (temp > 0.0001 && System.currentTimeMillis() - startTime < timeout) {
+        while (temp > 0.05 && System.currentTimeMillis() - startTime < timeout) {
             List<Integer> newOrder = new ArrayList<>(currentOrder);
+
+            //todo: guarantee group swap
             int pos1 = (int) (Math.random() * n);
             int pos2 = (int) (Math.random() * n);
 
@@ -87,7 +90,7 @@ public class teamForm {
         List<String> bestSortNames = bestOrder.stream().map(i -> names[i + 1]).collect(Collectors.toList());
         System.out.println(formatGroups(bestSortNames, 4));
         System.out.println("perms tested: " + permsTested);
-        System.out.println("runtime (s): " + (System.currentTimeMillis() - startTime)/1000);
+        System.out.println("runtime (ms): " + (System.currentTimeMillis() - startTime));
     }
 
     public static double getOrderMean (List<Integer> order) {
