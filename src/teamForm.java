@@ -7,7 +7,11 @@ import java.util.stream.IntStream;
 public class teamForm {
     public static Graph prefDAG;
     public static Graph mergedGraph;
-    public static double k = 0.0001;
+
+    public static double k1 = -0.75; //for person <-> person mean (directed to undirected graph)
+    public static double k2 = 1e-6; //for group means (all the people within a proposed group)
+    public static double k3 = 1e-6; //for group <-> group <-> group ... mean
+
     public static double timeout = 20000; //max runtime (in millis)
 
     public static void main(String[] args) throws Exception {
@@ -31,14 +35,14 @@ public class teamForm {
         mergedGraph = new Graph();
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                mergedGraph.addEdge(i, j, getMeanEdgeWeight(i, j, prefDAG, k), false);
+                mergedGraph.addEdge(i, j, getMeanEdgeWeight(i, j, prefDAG, k1), false);
             }
         }
 
         //todo: make a formula to take desired runtime (perms to test) and get cooling parameters
         int permsTested = 0;
-        double temp = 5; //was 20 //was 1.58 //was 5 || //was 27
-        double coolingRate = 0.000457; //was 0.00008 //was 0.000174 //was 0.000457 || //was 0.00126
+        double temp = 1.58; //was 20 //was 1.58 //was 5 || //was 27
+        double coolingRate = 0.000174; //was 0.00008 //was 0.000174 //was 0.000457 || //was 0.00126
 
         List<Integer> bestOrder = getRandomIndexList(n);
         List<Integer> currentOrder = new ArrayList<>(bestOrder);
@@ -94,12 +98,12 @@ public class teamForm {
             for (int i = 0; i < nodesInP; i++) { //todo: make not count all twice
                 for (int j = 0; j < nodesInP; j++) {
                     if (i == j) continue;
-                    pairMeans.add(getMeanEdgeWeight(order.get(i + p * nodesInP), order.get(j + p * nodesInP), mergedGraph, k));
+                    pairMeans.add(mergedGraph.getEdgeWeight(order.get(i + p * nodesInP), order.get(j + p * nodesInP)));
                 }
             }
-            groupMeans.add(getMean(pairMeans, k));
+            groupMeans.add(getMean(pairMeans, k2));
         }
-        return getMean(groupMeans, k);
+        return getMean(groupMeans, k3);
     }
 
     public static double acceptanceProbability (double currentMean, double newMean, double temp) {
@@ -107,9 +111,16 @@ public class teamForm {
         return Math.exp((newMean - currentMean) / temp);
     }
 
+    //uses bowl function to weight values
     public static double getMeanEdgeWeight(int firstNode, int secondNode, Graph graph, double k) {
-        return getMean(Arrays.asList(graph.getEdgeWeight(firstNode, secondNode), graph.getEdgeWeight(secondNode, firstNode)), k);
+        double firstRating = graph.getEdgeWeight(firstNode, secondNode);
+        double secondRating = graph.getEdgeWeight(secondNode, firstNode);
+        return getMean(Arrays.asList(firstRating * bowl(firstRating), secondRating * bowl(secondRating)), k);
     }
+
+//    public static double getMeanEdgeWeight(int firstNode, int secondNode, Graph graph, double k) {
+//        return getMean(Arrays.asList(graph.getEdgeWeight(firstNode, secondNode), graph.getEdgeWeight(secondNode, firstNode)), k);
+//    }
 
     //k determines the type of mean: 1 is arithmetic, 0 is geometric, -1 is harmonic or something
     public static double getMean(List<Double> numbers, double k) {
@@ -118,6 +129,18 @@ public class teamForm {
             numerator += Math.pow(num, k);
         }
         return Math.pow(numerator / numbers.size(), 1 / k);
+    }
+
+    //steven's fancy bowl function (weights mean function for pairwise merging)
+    public static double bowl (double x) {
+        double wa = 0.5;
+        double w1 = 1.25;
+        double w2 = 1.0;
+
+        return ((wa/(w1 + w2)) * (
+                (w1/(1.0 - 4.0/49.0)) * (1.0 - (1.0 / (0.4* Math.pow(x - 5.0, 2.0) + 1.0))) +
+                        w2*(Math.sqrt(((3.0/25.0)* Math.pow(x - 5.0, 2.0) + 1.0)) - 1.0)
+        ) + 1.0);
     }
 
     public static List<Integer> getRandomIndexList(int length) {

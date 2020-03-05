@@ -15,7 +15,6 @@ public class Graph {
     }
 
     public void addNode(int node) {
-        //if (adjacencyLists.size() == 0) root = node; //if first node added, make root
         adjacencyLists.put(node, new ArrayList<>());
     }
 
